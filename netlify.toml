@@ -1,0 +1,14 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NEXT_PUBLIC_SITE_URL = "space-store1.netlify.app"
+  NODE_VERSION = "22.14.0"
+
+# Prevent build failures
+[build.processing]
+  skip_processing = true
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
