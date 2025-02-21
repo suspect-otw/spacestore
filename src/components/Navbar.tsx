@@ -24,6 +24,15 @@ const Navbar = () => {
   const currentNumber = buttonNumbers[pathname as keyof typeof buttonNumbers] || 0;
   const direction = currentNumber > prevNumber ? 'forward' : 'backward';
 
+  // Utility function to determine animation properties
+  const getAnimationProps = (buttonNumber: number) => {
+    return {
+      direction,
+      isForward: currentNumber > prevNumber,
+      buttonNumber,
+    };
+  };
+
   const menuVariants = {
     closed: { opacity: 0, y: -20, transition: { duration: 0.2 } },
     open: { opacity: 1, y: 0, transition: { duration: 0.2 } },
@@ -33,7 +42,7 @@ const Navbar = () => {
     const isActive = pathname === href;
     const isPrevious = previousPath === href;
     const buttonNumber = buttonNumbers[href as keyof typeof buttonNumbers];
-    const isForward = currentNumber > prevNumber;
+    const { isForward } = getAnimationProps(buttonNumber);
     
     return (
       <Link href={href}>
