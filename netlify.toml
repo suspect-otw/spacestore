@@ -1,10 +1,11 @@
 [build]
-  command = "npm run build"
+  command = "npm run netlify-build"
   publish = ".next"
 
 [build.environment]
   NEXT_PUBLIC_SITE_URL = "space-store1.netlify.app"
-  NODE_VERSION = "22.14.0"
+  NODE_VERSION = "18"
+  NPM_FLAGS = "--legacy-peer-deps"
 
 # Prevent build failures
 [build.processing]
