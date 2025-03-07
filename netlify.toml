@@ -1,5 +1,5 @@
 [build]
-  command = "npm run netlify-build"
+  command = "NPM_CONFIG_PRODUCTION=false npm install && next build"
   publish = ".next"
 
 [build.environment]
