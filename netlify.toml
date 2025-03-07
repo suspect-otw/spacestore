@@ -8,6 +8,7 @@
   NPM_FLAGS = "--legacy-peer-deps"
   NEXT_USE_NETLIFY_EDGE = "true"
   NEXT_TELEMETRY_DISABLED = "1"
+  NEXT_TYPESCRIPT_COMPILE_OPTIONS = "{}::{\"incremental\":true,\"target\":\"ES2017\"}"
 
 # Prevent build failures
 [build.processing]
