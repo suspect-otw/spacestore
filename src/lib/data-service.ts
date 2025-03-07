@@ -1,7 +1,7 @@
-import { supabaseServer } from '@/utils/supabase/server';
-import { Brand, Product } from '@/types';
+import { supabaseServer } from '../utils/supabase/server';
+import { Brand, Product } from '../types';
 import { cache } from 'react';
-import { getBrandImagePlaceholder, getProductImagePlaceholder } from '@/utils/image-utils';
+import { getBrandImagePlaceholder, getProductImagePlaceholder } from '../utils/image-utils';
 
 // Define types for Supabase models based on our schema
 type SupabaseBrand = {

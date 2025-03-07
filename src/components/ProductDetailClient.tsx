@@ -1,10 +1,11 @@
 'use client';
 
+import React from 'react';
+import Breadcrumbs from './Breadcrumbs';
+import RequestForm from './RequestForm';
+import { Brand, Product } from '../types';
+import { getProductImagePlaceholder } from '../utils/image-utils';
 import { useState } from 'react';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import RequestForm from '@/components/RequestForm';
-import { Brand, Product } from '@/types';
-import { getProductImagePlaceholder } from '@/utils/image-utils';
 
 interface ProductDetailClientProps {
   product: Product;

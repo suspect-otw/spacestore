@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { getBrandImagePlaceholder } from '@/utils/image-utils';
+import { getBrandImagePlaceholder } from '../utils/image-utils';
 
 interface BrandCardProps {
   brandName: string;

@@ -1,10 +1,10 @@
-import { getBrandById, getBrandByName, getProductsByBrandId } from '@/lib/data-service';
+import { getBrandById, getBrandByName, getProductsByBrandId } from '../../../lib/data-service';
 import { notFound } from 'next/navigation';
-import Pagination from '@/components/Pagination';
-import ServerError from '@/components/ServerError';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import ProductCard from '@/components/ProductCard';
-import { getBrandImagePlaceholder } from '@/utils/image-utils';
+import Pagination from '../../../components/Pagination';
+import ServerError from '../../../components/ServerError';
+import Breadcrumbs from '../../../components/Breadcrumbs';
+import ProductCard from '../../../components/ProductCard';
+import { getBrandImagePlaceholder } from '../../../utils/image-utils';
 
 export default async function BrandPage({ 
   params,
