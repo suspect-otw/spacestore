@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules'), 'node_modules', 'junction') } catch (e) {}\"",
     "netlify-build": "npm install --legacy-peer-deps && next build"
   },
   "dependencies": {
