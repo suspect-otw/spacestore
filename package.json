@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules'), 'node_modules', 'junction') } catch (e) {}\"",
-    "netlify-build": "npm ci && next build"
+    "netlify-build": "npm ci && npm install --save-dev typescript @types/react @types/node @types/react-dom && next build"
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",
@@ -33,12 +33,12 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/node": "20.17.23",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
     "prisma": "^6.4.1",
-    "typescript": "^5"
+    "typescript": "5.8.2"
   }
 }
