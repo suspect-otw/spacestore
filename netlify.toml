@@ -17,4 +17,4 @@
   package = "@netlify/plugin-nextjs"
 
 [functions]
-  included_files = ["src/**"]
+  node_bundler = "esbuild"
