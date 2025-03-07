@@ -1,11 +1,11 @@
-import { getAllBrands, searchBrandsAndProducts } from '@/lib/data-service';
-import SearchBar from '@/components/SearchBar';
-import { Product, Brand } from '@/types';
-import Pagination from '@/components/Pagination';
-import ServerError from '@/components/ServerError';
-import BrandCard from '@/components/BrandCard';
-import ProductCard from '@/components/ProductCard';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import { getAllBrands, searchBrandsAndProducts } from '../../lib/data-service';
+import SearchBar from '../../components/SearchBar';
+import { Product, Brand } from '../../types';
+import Pagination from '../../components/Pagination';
+import ServerError from '../../components/ServerError';
+import BrandCard from '../../components/BrandCard';
+import ProductCard from '../../components/ProductCard';
+import Breadcrumbs from '../../components/Breadcrumbs';
 
 export default async function BrandsPage({
   searchParams,

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { getProductImagePlaceholder } from '@/utils/image-utils';
+import { getProductImagePlaceholder } from '../utils/image-utils';
 import RequestForm from './RequestForm';
 
 interface ProductCardProps {

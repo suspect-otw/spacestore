@@ -1,6 +1,6 @@
-import { getBrandById, getBrandByName, getProductById } from '@/lib/data-service';
+import { getBrandById, getBrandByName, getProductById } from '../../../../../lib/data-service';
 import { notFound } from 'next/navigation';
-import { ServerError, ProductDetailClient } from '@/components';
+import { ServerError, ProductDetailClient } from '../../../../../components';
 
 export default async function ProductPage({ 
   params 
