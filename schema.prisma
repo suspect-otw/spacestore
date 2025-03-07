@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id           Int       @id @default(autoincrement())
+  brand_name   String
+  is_scraped   Boolean   @default(false)
+  scrape_notes String?
+  products     Product[]
+  
+  @@map("brands")
+}
+
+model Product {
+  id                  Int     @id @default(autoincrement())
+  brand_id            Int
+  product_name        String
+  product_description String?
+  brand               Brand   @relation(fields: [brand_id], references: [id])
+  
+  @@map("products")
+  @@index([brand_id])
+} 

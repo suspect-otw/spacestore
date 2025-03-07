@@ -1,30 +1,3 @@
-here is a complete codes for the theme toggle for dark and light mode with svg
-gather the all related codes for the only dark and light mode and toggle animation and functionality
-i will give you the layout and global css either
-but do not go over the our color palatte or change any colors from our base layout
-only add the toggle 
-and if there is none dark or light codes inline of the other seperate components that we have implement them
-implement all pages and components
-by implementing u will change the colours for example:
-1-)in dark mode we will use our darkest tones of our color palatte for page background and component backgrounds, more bright colors for texts and buttons and cardds and hovers and for all components
-2-)in light mode we will use our bright tones for our backgrounds but darkest tones of our color palatte for text and components and icons etc.
-
-here is full code only take the toggle shits and check before implementing
-
-this part is app directory of the usage these are not exact shits just for inspiration
-
-only get the idea of dark and light and keep our colors and color palattes
-i dont want you to use the exact colors from these only get the functionality
-
-i dont want you to change our page.tsx i just need you to add this toggle component to our navbar only not in page in this example of code the toggle is in the body we dont want that we need it in the navbar
-
-the components folder has these;
-components->theme-provider.tsx , nav.tsx , glow.tsx , and 1 folder named ui
-in ui we have this;
-components->ui->button.tsx , card.tsx , dropdown-menu.tsx
-
-in the ui folder there is some implementations for glowing effects but its not necessary if u are not getting all of these context so here are codes for these pages
-
 
 [13:49, 20.02.2025] Emir: Directory Structure:
 
@@ -1028,6 +1001,3 @@ File: /package.json
     "typescript": "^5"
   }
 }
-
-## IMPORTANT : ONLY EXTRACT THE DARK AND LIGHT MODE TOGGLE AND ITS RELATED CODES LIKE SVG PATH AND USAGE AND FUNCTIONALITY AND THEN IMPLEMENT THE ONLY TOGGLE AND FUNCTIONALITY AND CHANGE THE COLORS OF THE WHOLE WEBSITE DEPENDS ON OUR COLOR PALATTE 
-## WE WILL NEEED dark: and light: attrs. in tailwindcss classes also U WILL USE THE COLOR PALATTES AGAIN U GOT IT?

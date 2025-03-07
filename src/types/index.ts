@@ -2,6 +2,9 @@ export interface Brand {
   brandId: number;
   brandName: string;
   brandImage: string;
+  brandDescription?: string;
+  brandWebsite?: string;
+  productCount?: number;
   createdAt: Date;
   updatedAt: Date;
   createdBy?: string;
