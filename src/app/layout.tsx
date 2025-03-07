@@ -5,8 +5,8 @@ import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Product Request Platform [DEV]",
-  description: "A platform for managing product requests and brands",
+  title: "🔧 DEVELOPMENT - Product Request Platform",
+  description: "Development version - A platform for managing product requests and brands",
 };
 
 export default function RootLayout({
@@ -23,6 +23,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Development environment banner */}
+          <div className="bg-yellow-500 text-black py-1 text-center font-bold">
+            ⚠️ DEVELOPMENT ENVIRONMENT ⚠️
+          </div>
           <Navbar />
           <main className="flex-grow">
             {children}

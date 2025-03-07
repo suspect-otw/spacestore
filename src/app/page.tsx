@@ -3,6 +3,11 @@ import Link from 'next/link';
 export default function Home() {
   return (
     <div className="min-h-screen">
+      {/* Development Mode Indicator */}
+      <div className="bg-red-600 text-white p-4 text-center text-xl font-bold animate-pulse">
+        ⚙️ DEVELOPMENT MODE - TESTING ENVIRONMENT ⚙️
+      </div>
+      
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#BDD4E7] to-[#8693AB] dark:from-[#212227] dark:to-[#637074] py-20">
         {/* Lighting effect circles */}
@@ -13,7 +18,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-5xl font-bold text-[#212227] dark:text-white mb-6">
-                Request Products from Your Favorite Brands
+                [DEV] Request Products from Your Favorite Brands
               </h1>
               <p className="text-xl text-[#637074] dark:text-white/80 mb-8">
                 Connect with top brands and request the products you need. Simple, efficient, and reliable.

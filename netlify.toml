@@ -18,13 +18,19 @@
 [context.production]
   command = "NPM_CONFIG_PRODUCTION=false npm install && next build"
 
-# Branch deploy context: Deploy preview for all branches EXCEPT production branch
+# Branch deploy context: Deploy preview for all branches
 [context.branch-deploy]
   command = "NPM_CONFIG_PRODUCTION=false npm install && next build"
 
-# Development branch deploy context 
+# Development branch specific settings
 [context.development]
   command = "NPM_CONFIG_PRODUCTION=false npm install && next build"
+  environment = { NETLIFY_NEXT_PLUGIN_SKIP = "true" }
+
+# Deploy preview specific settings
+[context.deploy-preview]
+  command = "NPM_CONFIG_PRODUCTION=false npm install && next build"
+  environment = { NETLIFY_NEXT_PLUGIN_SKIP = "true" }
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
