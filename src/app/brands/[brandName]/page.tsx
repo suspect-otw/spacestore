@@ -4,7 +4,7 @@ import Pagination from '../../../components/Pagination';
 import ServerError from '../../../components/ServerError';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import ProductCard from '../../../components/ProductCard';
-import { getBrandImagePlaceholder } from '../../../utils/image-utils';
+import { getBrandImagePlaceholder, getRandomImageFromStorage } from '../../../utils/image-utils';
 
 export default async function BrandPage({ 
   params,
@@ -46,8 +46,8 @@ export default async function BrandPage({
 
     const productsData = await getProductsByBrandId(brand.brandId, currentPage);
     
-    // Generate a placeholder image for the brand
-    const brandImageUrl = getBrandImagePlaceholder(brand.brandName, 600, 300);
+    // Supabase'den rastgele görsel seçimi
+    const brandImageUrl = getRandomImageFromStorage(brand.brandId);
 
     return (
       <div className="py-8">
@@ -59,23 +59,56 @@ export default async function BrandPage({
           
           {/* Brand Header */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8 dark:bg-gray-800">
-            <div 
-              className="h-64 w-full bg-cover bg-center"
-              style={{ 
-                backgroundImage: `url(${brandImageUrl})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }}
-            />
-            <div className="p-6">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{brand.brandName}</h1>
-              {brand.brandDescription && (
-                <p className="mt-2 text-gray-600 dark:text-gray-300">{brand.brandDescription}</p>
-              )}
-              <div className="mt-4 flex items-center">
-                <span className="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-indigo-900 dark:text-indigo-200">
-                  {productsData.totalProducts} {productsData.totalProducts === 1 ? 'product' : 'products'}
-                </span>
+            <div className="md:grid md:grid-cols-2 lg:grid-cols-5">
+              {/* Brand Image - Takes up 2/5 on large screens */}
+              <div className="lg:col-span-2 relative">
+                <div 
+                  className="h-64 md:h-full bg-cover bg-center"
+                  style={{ 
+                    backgroundImage: `url(${brandImageUrl})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    minHeight: '300px'
+                  }}
+                />
+                {/* Marka adı overlay */}
+                <div className="absolute inset-x-0 top-0 flex justify-center items-start pt-3">
+                  <span 
+                    className="text-black font-bold px-2 max-w-[90%] text-center"
+                    style={{ 
+                      textShadow: '0px 0px 5px white, 0px 0px 5px white, 0px 0px 5px white',
+                      fontSize: brand.brandName.length > 25 ? '1.5rem' : brand.brandName.length > 15 ? '1.75rem' : '2rem',
+                      wordBreak: 'break-word',
+                      lineHeight: '1.2'
+                    }}
+                  >
+                    {brand.brandName}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Brand Details - Takes up 3/5 on large screens */}
+              <div className="p-6 md:p-8 lg:col-span-3">
+                <div className="flex flex-col h-full">
+                  <div>
+                    <div className="flex items-center mb-3">
+                      <span className="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-indigo-900 dark:text-indigo-200">
+                        {productsData.totalProducts} {productsData.totalProducts === 1 ? 'product' : 'products'}
+                      </span>
+                      <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                        Brand ID: {brand.brandId}
+                      </span>
+                    </div>
+                    
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">{brand.brandName}</h1>
+                    
+                    {brand.brandDescription && (
+                      <div className="prose prose-indigo max-w-none mb-8 dark:prose-invert">
+                        <p className="text-gray-700 dark:text-gray-300">{brand.brandDescription}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
