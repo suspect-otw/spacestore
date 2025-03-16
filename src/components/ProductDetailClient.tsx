@@ -4,7 +4,7 @@ import React from 'react';
 import Breadcrumbs from './Breadcrumbs';
 import RequestForm from './RequestForm';
 import { Brand, Product } from '../types';
-import { getProductImagePlaceholder } from '../utils/image-utils';
+import { getProductImagePlaceholder, getRandomImageFromStorage } from '../utils/image-utils';
 import { useState } from 'react';
 
 interface ProductDetailClientProps {
@@ -20,8 +20,8 @@ export default function ProductDetailClient({
 }: ProductDetailClientProps) {
   const [showRequestForm, setShowRequestForm] = useState(false);
   
-  // Generate product image placeholder
-  const productImageUrl = getProductImagePlaceholder(product.productName, 600, 400);
+  // Supabase'den rastgele görsel seçimi
+  const productImageUrl = getRandomImageFromStorage(product.productId);
   
   return (
     <div className="py-8">
@@ -39,7 +39,7 @@ export default function ProductDetailClient({
         <div className="bg-white rounded-lg shadow-md overflow-hidden dark:bg-gray-800">
           <div className="md:grid md:grid-cols-2 lg:grid-cols-5">
             {/* Product Image - Takes up 2/5 on large screens */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 relative">
               <div 
                 className="h-64 md:h-full bg-cover bg-center"
                 style={{ 
@@ -49,6 +49,21 @@ export default function ProductDetailClient({
                   minHeight: '400px'
                 }}
               />
+              
+              {/* Ürün adı overlay */}
+              <div className="absolute inset-x-0 top-0 flex justify-center items-start pt-4">
+                <span 
+                  className="text-black font-bold px-2 max-w-[90%] text-center"
+                  style={{ 
+                    textShadow: '0px 0px 5px white, 0px 0px 5px white, 0px 0px 5px white',
+                    fontSize: product.productName.length > 30 ? '1.5rem' : product.productName.length > 20 ? '2rem' : '2.5rem',
+                    wordBreak: 'break-word',
+                    lineHeight: '1.2'
+                  }}
+                >
+                  {product.productName}
+                </span>
+              </div>
             </div>
             
             {/* Product Details - Takes up 3/5 on large screens */}

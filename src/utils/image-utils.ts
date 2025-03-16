@@ -88,4 +88,23 @@ export function getProductImagePlaceholder(productName: string, width = 400, hei
     textColor: 'FFFFFF',
     format: 'png'
   });
+}
+
+/**
+ * Supabase Storage'dan rastgele bir görsel URL'si döndürür
+ * @param id ID veya text değeri - hash için kullanılır
+ * @returns Rastgele bir görsel URL'si
+ */
+export function getRandomImageFromStorage(id: string | number): string {
+  // ID'yi string'e çevir
+  const idStr = id.toString();
+  
+  // Basit bir hash fonksiyonu - aynı ID için hep aynı görseli döndürecek
+  const hash = Array.from(idStr).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const imageNumber = (hash % 40) + 1; // 1-40 arası
+  
+  // Supabase Storage URL'si - Bu URL'yi kendi Supabase config'inizle değiştirin
+  // TODO: Bu URL'yi .env dosyasından alın
+  const storageUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://your-supabase-url.com";
+  return `${storageUrl}/storage/v1/object/public/images/${imageNumber}.jpg`;
 } 
