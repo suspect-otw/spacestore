@@ -3,10 +3,12 @@ import Link from 'next/link';
 export default function Home() {
   return (
     <div className="min-h-screen">
-      {/* Development Mode Indicator */}
-      <div className="bg-red-600 text-white p-4 text-center text-xl font-bold animate-pulse">
-        ⚙️ DEVELOPMENT MODE - TESTING ENVIRONMENT ⚙️
-      </div>
+      {/* Development Mode Indicator - sadece development modunda göster */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="bg-red-600 text-white p-4 text-center text-xl font-bold animate-pulse">
+          ⚙️ DEVELOPMENT MODE - TESTING ENVIRONMENT ⚙️
+        </div>
+      )}
       
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#BDD4E7] to-[#8693AB] dark:from-[#212227] dark:to-[#637074] py-20">
