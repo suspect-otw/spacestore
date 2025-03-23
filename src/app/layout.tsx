@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({ subsets: ["latin"] });
 
-// NODE_ENV'ye göre başlığı belirle
-const title = process.env.NODE_ENV === "development" 
-  ? "🔧 DEVELOPMENT - Product Request Platform" 
-  : "Product Request Platform";
-
-const description = process.env.NODE_ENV === "development"
-  ? "Development version - A platform for managing product requests and brands"
-  : "A platform for managing product requests and brands";
+const title ="Product Request Platform";
+const description ="A platform for managing product requests and brands";
 
 export const metadata: Metadata = {
   title,
@@ -35,12 +27,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* Development environment banner - sadece development modunda göster */}
-          {process.env.NODE_ENV === "development" && (
-            <div className="bg-yellow-500 text-black py-1 text-center font-bold">
-              ⚠️ DEVELOPMENT ENVIRONMENT ⚠️
-            </div>
-          )}
           <Navbar />
           <main className="flex-grow">
             {children}
