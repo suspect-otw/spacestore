@@ -183,7 +183,7 @@ const Navbar = () => {
                 </Link>
                 <div className="pt-4 space-y-4">
                   <Link
-                    href="/signin"
+                    href="/login"
                     className="block w-full px-6 py-2 rounded-full text-[#212227] dark:text-white border border-[#212227]/20 dark:border-white/20 hover:bg-white/10 dark:hover:bg-white/10 transition-all duration-200 text-center"
                     onClick={() => setIsOpen(false)}
                   >
