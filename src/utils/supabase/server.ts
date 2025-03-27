@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
 export async function createClient() {
@@ -27,3 +28,18 @@ export async function createClient() {
     }
   )
 }
+
+// Direct Supabase client for database operations that don't need auth cookies
+const createServerOnlyClient = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Missing Supabase environment variables');
+  }
+
+  return createSupabaseClient(supabaseUrl, supabaseAnonKey);
+};
+
+// For convenience, create and export a client instance for database operations
+export const supabaseServer = createServerOnlyClient();
