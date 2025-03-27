@@ -20,7 +20,7 @@ export function ThemeToggle() {
         size="icon"
         className="h-10 w-10 rounded-full"
       >
-        <MoonIcon className="h-5 w-5 text-blue-300" strokeWidth={2} />
+        <MoonIcon className="h-10 w-10 text-blue-300" strokeWidth={2} />
       </Button>
     )
   }

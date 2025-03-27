@@ -101,13 +101,13 @@ const Navbar = () => {
             {/* Right section - Auth buttons & Theme toggle */}
             <div className="hidden md:flex items-center space-x-4">
               <Link
-                href="/signin"
+                href="/login"
                 className="px-6 py-2 rounded-full text-[#212227] dark:text-white border border-[#212227]/20 dark:border-white/20 hover:bg-[#8693AB]/20 dark:hover:bg-white/20 transition-all duration-200"
               >
                 Sign In
               </Link>
               <Link
-                href="/signup"
+                href="/register"
                 className="px-6 py-2 rounded-full text-white bg-gradient-to-r from-[#8693AB] to-[#AAB9CF] hover:opacity-90 transition-all duration-200 shadow-md"
               >
                 Sign Up
@@ -190,7 +190,7 @@ const Navbar = () => {
                     Sign In
                   </Link>
                   <Link
-                    href="/signup"
+                    href="/register"
                     className="block w-full px-6 py-2 rounded-full text-white bg-gradient-to-r from-[#8693AB] to-[#AAB9CF] hover:opacity-90 transition-all duration-200 shadow-md text-center"
                     onClick={() => setIsOpen(false)}
                   >
