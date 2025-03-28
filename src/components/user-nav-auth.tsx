@@ -13,21 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { LogOut, Settings, User } from "lucide-react"
-import { createClient } from '@/utils/supabase/client'
+import { getUser, signOut } from '@/actions/auth'
 
 export function UserNavAuth() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
-  const supabase = createClient()
 
   useEffect(() => {
-    async function getUserData() {
+    async function fetchUserData() {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        const response = await getUser()
         
-        if (session?.user) {
-          setUser(session.user)
+        if (response.status === "success") {
+          setUser(response.user)
         }
       } catch (error) {
         console.error('Error fetching user session:', error)
@@ -36,13 +35,13 @@ export function UserNavAuth() {
       }
     }
 
-    getUserData()
+    fetchUserData()
   }, [])
 
   async function handleSignOut() {
     try {
-      await supabase.auth.signOut()
-      router.push('/login')
+      await signOut()
+      // Note: No need for router.push as signOut already redirects
     } catch (error) {
       console.error('Error signing out:', error)
     }

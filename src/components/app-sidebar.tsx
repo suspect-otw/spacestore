@@ -33,7 +33,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useEffect, useState } from "react"
-import { createClient } from "@/utils/supabase/client"
+import { getUser, signOut } from "@/actions/auth"
 
 const navData = {
   navMain: [
@@ -109,14 +109,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   
   // Fetch user data on component mount
   useEffect(() => {
-    const supabase = createClient()
-    
-    async function getUserData() {
+    async function fetchUserData() {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        const response = await getUser()
         
-        if (session?.user) {
-          const { user } = session
+        if (response.status === "success" && response.user) {
+          const user = response.user
           setUserData({
             name: user.user_metadata?.fullname || "User",
             email: user.email || "",
@@ -130,32 +128,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       }
     }
     
-    getUserData()
-    
-    // Set up auth listener for changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (session?.user) {
-          const { user } = session
-          setUserData({
-            name: user.user_metadata?.fullname || "User",
-            email: user.email || "",
-            avatar: user.user_metadata?.avatar_url || "",
-          })
-        }
-      }
-    )
-    
-    return () => {
-      subscription.unsubscribe()
-    }
+    fetchUserData()
   }, [])
 
-  // Add a function to handle logout
+  // Handle logout using the server action
   const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    window.location.href = '/login' // Redirect to login page after signout
+    await signOut()
   }
 
   return (

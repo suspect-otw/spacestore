@@ -4,10 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
-
+import { userAgent } from "next/server";
 
 export async function signUp(formData: FormData) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const credentials = {
         fullname: formData.get("fullname") as string,
@@ -17,7 +17,7 @@ export async function signUp(formData: FormData) {
 
     };    
 
-    const { error , data } =  await (await supabase).auth.signUp({
+    const { error , data } =  await supabase.auth.signUp({
         email: credentials.email,
         password: credentials.password,
         options: {
@@ -46,7 +46,7 @@ export async function signUp(formData: FormData) {
 
 export async function signIn(formData: FormData) { 
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const credentials = {
         email: formData.get("email") as string,
@@ -67,3 +67,41 @@ export async function signIn(formData: FormData) {
     revalidatePath("/dashboard" , "layout");
     return {status: "success", user: data.user}
 }
+
+export async function signOut() {
+    const supabase = await createClient();
+    
+    const { error } = await supabase.auth.signOut();
+
+    if(error){
+        redirect("/error");
+    }
+    revalidatePath("/" , "layout");
+    redirect("/login");
+}
+
+export async function getUser() {
+    const supabase = await createClient();
+    
+    const { data, error } = await supabase.auth.getSession();
+    
+    if(error){
+        return {
+            status: error?.message,
+            user: null,
+        };
+    }
+    
+    if(!data.session){
+        return {
+            status: "No active session",
+            user: null,
+        };
+    }
+    
+    return {
+        status: "success",
+        user: data.session.user,
+    };
+}
+

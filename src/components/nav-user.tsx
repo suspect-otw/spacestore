@@ -38,7 +38,7 @@ export function NavUser({
     email: string
     avatar: string
   }
-  onLogout?: () => Promise<void>
+  onLogout?: () => void
 }) {
   const { isMobile } = useSidebar()
 
