@@ -17,7 +17,6 @@ export default function RequestsPage() {
     <div className="flex h-screen w-full overflow-hidden">
       <SidebarInset>
         <div className="flex min-h-screen w-full flex-col">
-          <SiteHeader />
           <div className="flex flex-1 flex-col overflow-auto p-6">
             <div className="mb-6 flex items-center justify-between">
               <h1 className="text-2xl font-semibold">Product Requests</h1>

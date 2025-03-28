@@ -1,22 +1,17 @@
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import SignUpForm from "@/components/SignUpForm";
-import Link from "next/link";
-import React from "react";
 
-const SignUp = async () => {
+export default function RegisterPage() {
   return (
-    <div className="w-full flex mt-20 justify-center">
-      <section className="flex flex-col w-[400px]">
-        <h1 className="text-3xl w-full text-center font-bold mb-6">Sign Up</h1>
-        <SignUpForm />
-        <div className="mt-2 flex items-center">
-          <h1>Already have an account?</h1>
-          <Link className="font-bold ml-2" href="/login">
-            Sign In
-          </Link>
+    <>
+      <Navbar />
+      <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
+        <div className="w-full max-w-sm md:max-w-3xl">
+          <SignUpForm />
         </div>
-      </section>
-    </div>
+      </div>
+      <Footer />
+    </>
   );
-};
-
-export default SignUp;
+}

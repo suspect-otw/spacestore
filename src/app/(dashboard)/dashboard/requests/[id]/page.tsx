@@ -99,7 +99,6 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
       <AppSidebar variant="inset" />
       <SidebarInset>
         <div className="flex min-h-screen w-full flex-col">
-          <SiteHeader />
           <div className="flex flex-1 flex-col overflow-auto p-6">
             <div className="mb-6">
               <Link href="/dashboard/requests" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
