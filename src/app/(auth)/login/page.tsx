@@ -1,31 +1,17 @@
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import LoginForm from "@/components/LoginForm";
-import LoginGithub from "@/components/LoginGoogle";
-import Link from "next/link";
 
 export default function LoginPage() {
   return (
     <>
-      <div className="w-full flex mt-20 justify-center">
-        <section className="flex flex-col w-[400px]">
-          <h1 className="text-3xl w-full text-center font-bold mb-6">
-            Sign in
-          </h1>
+      <Navbar />
+      <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
+        <div className="w-full max-w-sm md:max-w-3xl">
           <LoginForm />
-          <LoginGithub />
-          <div className="mt-2 flex items-center">
-            <h1>{`Don't have an account?`}</h1>
-            <Link className="font-bold ml-2" href="/register">
-              Sign Up
-            </Link>
-          </div>
-          <div className="mt-2 flex items-center">
-            <h1>{`Forgot your password?`}</h1>
-            <Link className="font-bold ml-2" href="/forgot-password">
-              Reset Password
-            </Link>
-          </div>
-        </section>
+        </div>
       </div>
+      <Footer />
     </>
   );
 }

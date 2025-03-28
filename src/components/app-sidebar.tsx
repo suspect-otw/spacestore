@@ -2,22 +2,22 @@
 
 import * as React from "react"
 import {
-  ArrowUpCircleIcon,
-  BarChartIcon,
-  CameraIcon,
-  ClipboardListIcon,
-  DatabaseIcon,
-  FileCodeIcon,
-  FileIcon,
-  FileTextIcon,
-  FolderIcon,
-  HelpCircleIcon,
-  LayoutDashboardIcon,
-  ListIcon,
-  SearchIcon,
-  SettingsIcon,
-  UsersIcon,
-} from "lucide-react"
+  IconCamera,
+  IconChartBar,
+  IconDashboard,
+  IconDatabase,
+  IconFileAi,
+  IconFileDescription,
+  IconFileWord,
+  IconFolder,
+  IconHelp,
+  IconInnerShadowTop,
+  IconListDetails,
+  IconReport,
+  IconSearch,
+  IconSettings,
+  IconUsers,
+} from "@tabler/icons-react"
 
 import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
@@ -32,125 +32,132 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { useEffect, useState } from "react"
+import { createClient } from "@/utils/supabase/client"
 
-const data = {
-  user: {
-    name: "Your Name",
-    email: "m@example.com",
-    avatar: "../../../../../public/globe.svg",
-  },
+const navData = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
-      icon: LayoutDashboardIcon,
+      url: "/dashboard",
+      icon: IconDashboard,
     },
     {
       title: "Lifecycle",
       url: "#",
-      icon: ListIcon,
+      icon: IconListDetails,
     },
     {
       title: "Analytics",
       url: "#",
-      icon: BarChartIcon,
+      icon: IconChartBar,
     },
     {
       title: "Projects",
       url: "#",
-      icon: FolderIcon,
+      icon: IconFolder,
     },
     {
       title: "Team",
       url: "#",
-      icon: UsersIcon,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: CameraIcon,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: FileTextIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: FileCodeIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      icon: IconUsers,
     },
   ],
   navSecondary: [
     {
       title: "Settings",
       url: "#",
-      icon: SettingsIcon,
+      icon: IconSettings,
     },
     {
       title: "Get Help",
       url: "#",
-      icon: HelpCircleIcon,
+      icon: IconHelp,
     },
     {
       title: "Search",
       url: "#",
-      icon: SearchIcon,
+      icon: IconSearch,
     },
   ],
   documents: [
     {
       name: "Data Library",
       url: "#",
-      icon: DatabaseIcon,
+      icon: IconDatabase,
     },
     {
       name: "Reports",
       url: "#",
-      icon: ClipboardListIcon,
+      icon: IconReport,
     },
     {
       name: "Word Assistant",
       url: "#",
-      icon: FileIcon,
+      icon: IconFileWord,
     },
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [userData, setUserData] = useState({
+    name: "",
+    email: "",
+    avatar: "",
+  })
+  const [loading, setLoading] = useState(true)
+  
+  // Fetch user data on component mount
+  useEffect(() => {
+    const supabase = createClient()
+    
+    async function getUserData() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (session?.user) {
+          const { user } = session
+          setUserData({
+            name: user.user_metadata?.fullname || "User",
+            email: user.email || "",
+            avatar: user.user_metadata?.avatar_url || "",
+          })
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    getUserData()
+    
+    // Set up auth listener for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          const { user } = session
+          setUserData({
+            name: user.user_metadata?.fullname || "User",
+            email: user.email || "",
+            avatar: user.user_metadata?.avatar_url || "",
+          })
+        }
+      }
+    )
+    
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  // Add a function to handle logout
+  const handleLogout = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = '/login' // Redirect to login page after signout
+  }
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -161,20 +168,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <ArrowUpCircleIcon className="h-5 w-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <IconInnerShadowTop className="!size-5" />
+                <span className="text-base font-semibold">Space Store One</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={navData.navMain} />
+        <NavDocuments items={navData.documents} />
+        <NavSecondary items={navData.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {!loading && <NavUser user={userData} onLogout={handleLogout} />}
       </SidebarFooter>
     </Sidebar>
   )
