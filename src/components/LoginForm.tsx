@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { signIn } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +20,7 @@ const LoginForm = () => {
     const formData = new FormData(event.currentTarget);
     const result = await signIn(formData);
     if (result.status === "success") {
-      router.push("/dashboard");
+      router.push("/admin");
     } else {
       setError(result.status);
     }

@@ -1,13 +1,15 @@
 /* USERS TABLE IN SUPABASE (public.user_profiles)*/
 CREATE TABLE public.user_profiles (
-  id uuid PRIMARY KEY DEFAULT auth.uid(),
-  email character varying NOT NULL,
-  full_name character varying NOT NULL,
-  phone character varying NOT NULL,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  role user_role NOT NULL DEFAULT 'user',  -- Enum type for roles: 'admin', 'staff', 'user'
+  id uuid NOT NULL DEFAULT auth.uid(),
+  email text NOT NULL,
+  fullname text NOT NULL,
+  "phoneNumber" text NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  role public.user_role NOT NULL DEFAULT 'user'::user_role,
+  CONSTRAINT user_profiles_pkey PRIMARY KEY (id),
   CONSTRAINT user_profiles_email_key UNIQUE (email),
-  CONSTRAINT user_profiles_phone_key UNIQUE (phone)
+  CONSTRAINT user_profiles_phone_key UNIQUE ("phoneNumber")
 );
 
 -- Step 1: Create an enum type for user roles
