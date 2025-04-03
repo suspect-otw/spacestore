@@ -22,21 +22,21 @@ export function UserNavAuth() {
 
   useEffect(() => {
     async function fetchUserData() {
-      try {
-        const response = await getUser()
-        
-        if (response.status === "success") {
-          setUser(response.user)
+        try {
+            const response = await getUser();
+            
+            if (response.status === "success") {
+                setUser(response.user); // Now using authenticated user data
+            }
+        } catch (error) {
+            console.error('Error fetching user session:', error);
+        } finally {
+            setLoading(false);
         }
-      } catch (error) {
-        console.error('Error fetching user session:', error)
-      } finally {
-        setLoading(false)
-      }
     }
 
-    fetchUserData()
-  }, [])
+    fetchUserData();
+}, []);
 
   async function handleSignOut() {
     try {

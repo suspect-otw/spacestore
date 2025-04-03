@@ -39,7 +39,7 @@ export async function signUp(formData: FormData) {
        }
     }
     else{
-        revalidatePath("/" , "layout");
+        revalidatePath("/confirm-email" , "layout");
         return{status: "success", user: data.user}
     }
 }
@@ -51,11 +51,9 @@ export async function signIn(formData: FormData) {
     const credentials = {
         email: formData.get("email") as string,
         password: formData.get("password") as string,
-        phoneNumber: formData.get("phoneNumber") as string,
-
     };  
 
-    const { error , data} = await (await supabase).auth.signInWithPassword(credentials);
+    const { error , data} = await supabase.auth.signInWithPassword(credentials);
 
     if(error){
         return {
@@ -63,7 +61,7 @@ export async function signIn(formData: FormData) {
             user: null,
         };
     } 
- //TODO: Create user instance in public.users_profiles table
+
     revalidatePath("/dashboard" , "layout");
     return {status: "success", user: data.user}
 }
@@ -76,32 +74,129 @@ export async function signOut() {
     if(error){
         redirect("/error");
     }
-    revalidatePath("/" , "layout");
+    revalidatePath("/login" , "layout");
     redirect("/login");
 }
 
 export async function getUser() {
     const supabase = await createClient();
     
-    const { data, error } = await supabase.auth.getSession();
+    // Use getUser() instead of getSession()
+    const { data: { user }, error } = await supabase.auth.getUser();
     
-    if(error){
+    if (error) {
         return {
-            status: error?.message,
+            status: error.message,
             user: null,
         };
     }
     
-    if(!data.session){
+    if (!user) {
         return {
-            status: "No active session",
+            status: "No authenticated user",
             user: null,
         };
     }
     
     return {
         status: "success",
-        user: data.session.user,
+        user: user, // This user is authenticated via the server
     };
 }
 
+export async function getRole(): Promise<"user" | "admin" | "staff" | null> {
+  const supabase = await createClient();
+  
+  try {
+    // Get authenticated user
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    // If no user or auth error, redirect to login
+    if (error || !user) {
+      await supabase.auth.signOut();
+      redirect("/login");
+    }
+
+    // Fetch role from user_profiles
+    const { data: profile, error: profileError } = await supabase
+      .from("user_profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    // If profile error, invalidate session
+    if (profileError || !profile) {
+      await supabase.auth.signOut();
+      redirect("/login");
+    }
+
+    // Validate role type
+    const validRoles = ["user", "admin", "staff"];
+    if (!validRoles.includes(profile.role)) {
+      await supabase.auth.signOut();
+      redirect("/login");
+    }
+
+    return profile.role as "user" | "admin" | "staff";
+    
+  } catch (error) {
+    console.error("Role check error:", error);
+    await supabase.auth.signOut();
+    redirect("/login");
+  }
+}
+  
+
+
+export async function getUserProfile(): Promise<{
+    status: string;
+    data: {
+      fullname: string;
+      email: string;
+      phoneNumber: string;
+      role: string;
+    } | null;
+}>
+{
+    const supabase = await createClient();
+    
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (error || !user) {
+        return { 
+          status: error?.message || "No authenticated user", 
+          data: null 
+        };
+      }
+  
+      const { data: profile, error: profileError } = await supabase
+        .from("user_profiles")
+        .select("fullname, email, phoneNumber, role")
+        .eq("id", user.id)
+        .single();
+  
+      if (profileError || !profile) {
+        return {
+          status: profileError?.message || "Profile not found",
+          data: null
+        };
+      }
+  
+      return {
+        status: "success",
+        data: {
+          fullname: profile.fullname,
+          email: profile.email,
+          phoneNumber: profile.phoneNumber,
+          role: profile.role
+        }
+      };
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      return {
+        status: "Internal server error",
+        data: null
+      };
+    }
+}

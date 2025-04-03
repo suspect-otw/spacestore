@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { User } from "@supabase/supabase-js";
 
-export default function ClientComponent() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    async function getUser() {
-      setUser(null);
-    }
-    getUser();
-  }, []);
-
-  return <h2>{user?.email}</h2>;
+export default function ClientComponent({ user }: { user: User }) {
+  return (
+    <div>
+      <h1>Admin Dashboard</h1>
+      <div>
+        {Object.entries(user).map(([key, value]) => (
+          <p key={key}>
+            <strong>{key}:</strong> {JSON.stringify(value, null, 2)}
+          </p>
+        ))}
+      </div>
+    </div>
+  );
 }
