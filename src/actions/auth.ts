@@ -6,6 +6,19 @@ import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { userAgent } from "next/server";
 
+
+export async function getUserSession() {
+    const supabase = await createClient();
+    const { data , error } = await supabase.auth.getUser();
+    if(error){
+        return {
+            status: error?.message,
+            user: null,
+        };
+    }
+    return {status: "success", user: data.user};
+}
+
 export async function signUp(formData: FormData) {
     const supabase = await createClient();
 
@@ -24,6 +37,7 @@ export async function signUp(formData: FormData) {
             data: {
                 fullname: credentials.fullname,
                 phoneNumber: credentials.phoneNumber,
+                role: "user",
             },
         },
     });

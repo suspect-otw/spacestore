@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
+import { getUser } from '@/actions/auth';
+import { UserNavAuth } from './user-nav-auth';
+import { Button } from './ui/button';
+import { Skeleton } from "@/components/ui/skeleton";
 
 function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T | undefined>(undefined);
@@ -18,13 +22,35 @@ const Navbar = () => {
   const pathname = usePathname();
   const previousPath = usePrevious(pathname);
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      setLoading(true);
+      try {
+        const response = await getUser();
+        if (response.status === 'success' && response.user) {
+          setUser(response.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error fetching user session in Navbar:', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUserData();
+  }, []);
 
   const buttonNumbers = {'/': 1, '/brands': 2, '/about': 3, '/contact': 4};
   const prevNumber = previousPath ? buttonNumbers[previousPath as keyof typeof buttonNumbers] : 0;
   const currentNumber = buttonNumbers[pathname as keyof typeof buttonNumbers] || 0;
   const direction = currentNumber > prevNumber ? 'forward' : 'backward';
 
-  // Utility function to determine animation properties
   const getAnimationProps = (buttonNumber: number) => {
     return {
       direction,
@@ -100,24 +126,40 @@ const Navbar = () => {
 
             {/* Right section - Auth buttons & Theme toggle */}
             <div className="hidden md:flex items-center space-x-4">
-              <Link
-                href="/login"
-                className="px-6 py-2 rounded-full text-[#212227] dark:text-white border border-[#212227]/20 dark:border-white/20 hover:bg-[#8693AB]/20 dark:hover:bg-white/20 transition-all duration-200"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/register"
-                className="px-6 py-2 rounded-full text-white bg-gradient-to-r from-[#8693AB] to-[#AAB9CF] hover:opacity-90 transition-all duration-200 shadow-md"
-              >
-                Sign Up
-              </Link>
+              {loading ? (
+                <>
+                  <Skeleton className="h-9 w-20 rounded-full" />
+                  <Skeleton className="h-9 w-20 rounded-full" />
+                </>
+              ) : user ? (
+                <UserNavAuth />
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="px-6 py-2 rounded-full text-[#212227] dark:text-white border border-[#212227]/20 dark:border-white/20 hover:bg-[#8693AB]/20 dark:hover:bg-white/20 transition-all duration-200"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="px-6 py-2 rounded-full text-white bg-gradient-to-r from-[#8693AB] to-[#AAB9CF] hover:opacity-90 transition-all duration-200 shadow-md"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
               <ThemeToggle />
             </div>
 
             {/* Mobile menu button */}
             <div className="flex items-center md:hidden space-x-4">
               <ThemeToggle />
+              {loading ? (
+                <Skeleton className="h-8 w-8 rounded-full" />
+              ) : user ? (
+                <UserNavAuth />
+              ) : null}
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="text-[#212227] dark:text-white hover:bg-white/10 dark:hover:bg-white/5 rounded-lg p-2 transition-colors duration-200"
@@ -182,20 +224,29 @@ const Navbar = () => {
                   Contact
                 </Link>
                 <div className="pt-4 space-y-4">
-                  <Link
-                    href="/login"
-                    className="block w-full px-6 py-2 rounded-full text-[#212227] dark:text-white border border-[#212227]/20 dark:border-white/20 hover:bg-white/10 dark:hover:bg-white/10 transition-all duration-200 text-center"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="block w-full px-6 py-2 rounded-full text-white bg-gradient-to-r from-[#8693AB] to-[#AAB9CF] hover:opacity-90 transition-all duration-200 shadow-md text-center"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Sign Up
-                  </Link>
+                  {loading ? (
+                    <>
+                      <Skeleton className="h-9 w-full rounded-full" />
+                      <Skeleton className="h-9 w-full rounded-full" />
+                    </>
+                  ) : !user ? (
+                    <>
+                      <Link
+                        href="/login"
+                        className="block w-full px-6 py-2 rounded-full text-[#212227] dark:text-white border border-[#212227]/20 dark:border-white/20 hover:bg-white/10 dark:hover:bg-white/10 transition-all duration-200 text-center"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/register"
+                        className="block w-full px-6 py-2 rounded-full text-white bg-gradient-to-r from-[#8693AB] to-[#AAB9CF] hover:opacity-90 transition-all duration-200 shadow-md text-center"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Sign Up
+                      </Link>
+                    </>
+                  ) : null}
                 </div>
               </div>
             </div>

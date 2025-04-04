@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useEffect, useState } from "react"
 import { getUser, signOut } from "@/actions/auth"
+import { Skeleton } from "./ui/skeleton"
 
 const navData = {
   navMain: [
@@ -159,7 +160,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={navData.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        {!loading && <NavUser user={userData} onLogout={handleLogout} />}
+        {loading ? (
+          <div className="flex items-center space-x-3 p-3">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-4 w-[150px]" />
+              <Skeleton className="h-4 w-[100px]" />
+            </div>
+          </div>
+        ) : userData ? (
+          <NavUser user={userData} onLogout={handleLogout} />
+        ) : null}
       </SidebarFooter>
     </Sidebar>
   )

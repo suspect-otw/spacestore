@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut, Settings, User } from "lucide-react"
 import { getUser, signOut } from '@/actions/auth'
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function UserNavAuth() {
   const [user, setUser] = useState<any>(null)
@@ -25,11 +26,14 @@ export function UserNavAuth() {
         try {
             const response = await getUser();
             
-            if (response.status === "success") {
-                setUser(response.user); // Now using authenticated user data
+            if (response.status === "success" && response.user) {
+                setUser(response.user); // Set user if fetch is successful and user exists
+            } else {
+                setUser(null); // Explicitly set user to null if not logged in or error
             }
         } catch (error) {
             console.error('Error fetching user session:', error);
+            setUser(null); // Set user to null on error
         } finally {
             setLoading(false);
         }
@@ -41,7 +45,8 @@ export function UserNavAuth() {
   async function handleSignOut() {
     try {
       await signOut()
-      // Note: No need for router.push as signOut already redirects
+      setUser(null); // Update state after sign out
+      // Note: No need for router.push as signOut likely handles redirect
     } catch (error) {
       console.error('Error signing out:', error)
     }
@@ -59,12 +64,12 @@ export function UserNavAuth() {
 
   if (loading) {
     return (
-      <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full">
-        <Avatar className="h-10 w-10">
-          <AvatarFallback>...</AvatarFallback>
-        </Avatar>
-      </Button>
+      <Skeleton className="h-10 w-10 rounded-full" />
     )
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (
