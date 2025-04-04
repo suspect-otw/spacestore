@@ -1,13 +1,10 @@
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button"
 import MobileHeroButtons from '@/components/MobileHeroButtons';
 
 export default function Home() {
   return (
     <div className="min-h-screen">
-      <Navbar />
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#BDD4E7] to-[#8693AB] dark:from-[#212227] dark:to-[#637074] py-20">
         {/* Lighting effect circles */}
@@ -98,7 +95,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <Footer />
     </div>
   );
 }

@@ -1,41 +1,31 @@
-import { getBrandById, getBrandByName, getProductsByBrandId } from '../../../lib/data-service';
+import { getBrandById, getBrandByName, getProductsByBrandId } from '../../../../lib/data-service';
 import { notFound } from 'next/navigation';
-import Pagination from '../../../components/Pagination';
-import ServerError from '../../../components/ServerError';
-import Breadcrumbs from '../../../components/Breadcrumbs';
-import ProductCard from '../../../components/ProductCard';
-import { getBrandImagePlaceholder, getRandomImageFromStorage } from '../../../utils/image-utils';
+import Pagination from '../../../../components/Pagination';
+import ServerError from '../../../../components/ServerError';
+import Breadcrumbs from '../../../../components/Breadcrumbs';
+import ProductCard from '../../../../components/ProductCard';
+import { getRandomImageFromStorage } from '../../../../utils/image-utils';
 
-export default async function BrandPage({ 
-  params,
-  searchParams 
-}: { 
-  params: Promise<{ brandName: string }>;
-  searchParams: Promise<{ page?: string }>;
-}) {
-  const { brandName } = await params;
-  const { page = '1' } = await searchParams;
+
+// Helper function to render the actual page content or error state
+async function renderBrandPageContent(params: { brandName: string }, searchParams: { page?: string }) {
+  const { brandName } = params;
+  const { page = '1' } = searchParams;
   const currentPage = parseInt(page, 10) || 1;
   
   try {
-    // Decode the URL-encoded parameter
     const decodedParam = decodeURIComponent(brandName);
     let brand;
     
-    // Check if the URL is in the new format (contains a dash)
     if (decodedParam.includes('-')) {
-      // Extract the brand id from the parameter
       const [brandIdStr] = decodedParam.split('-');
       const brandId = Number(brandIdStr);
       if (isNaN(brandId)) {
         console.error(`Invalid brand id in URL param: ${decodedParam}`);
         notFound();
       }
-      
-      // Fetch brand using brand id
       brand = await getBrandById(brandId);
     } else {
-      // Fall back to the old method of fetching by name
       brand = await getBrandByName(decodedParam);
     }
     
@@ -45,10 +35,9 @@ export default async function BrandPage({
     }
 
     const productsData = await getProductsByBrandId(brand.brandId, currentPage);
-    
-    // Supabase'den rastgele görsel seçimi
     const brandImageUrl = getRandomImageFromStorage(brand.brandId);
 
+    // Return the JSX for successful data load
     return (
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -150,7 +139,30 @@ export default async function BrandPage({
       </div>
     );
   } catch (error) {
-    console.error(`Error in BrandPage for ${brandName}:`, error);
+    console.error(`Error rendering BrandPage content for ${brandName}:`, error);
+    // Return ServerError component on error
     return <ServerError message="Error loading brand details. Please try again later." />;
   }
+}
+
+// Main page component that includes layout
+export default async function BrandPageWrapper({ 
+  params: paramsProp, // Prop is potentially a Promise
+  searchParams: searchParamsProp // Prop is potentially a Promise
+}: { 
+  params: Promise<{ brandName: string }>; // Correct type hint
+  searchParams: Promise<{ page?: string }>; // Correct type hint
+}) {
+  // Await the Promises before passing to the render function
+  const resolvedParams = await paramsProp;
+  const resolvedSearchParams = await searchParamsProp;
+  const pageContent = await renderBrandPageContent(resolvedParams, resolvedSearchParams);
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">
+        {pageContent} {/* Render content or error component */}
+      </main>
+    </div>
+  );
 } 

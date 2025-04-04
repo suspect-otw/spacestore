@@ -1,28 +1,30 @@
-import { getAllBrands, searchBrandsAndProducts } from '../../lib/data-service';
-import SearchBar from '../../components/SearchBar';
-import { Product, Brand } from '../../types';
-import Pagination from '../../components/Pagination';
-import ServerError from '../../components/ServerError';
-import BrandCard from '../../components/BrandCard';
-import ProductCard from '../../components/ProductCard';
-import Breadcrumbs from '../../components/Breadcrumbs';
+import { getAllBrands, searchBrandsAndProducts } from '../../../lib/data-service';
+import SearchBar from '../../../components/SearchBar';
+import { Product, Brand } from '../../../types';
+import Pagination from '../../../components/Pagination';
+import ServerError from '../../../components/ServerError';
+import BrandCard from '../../../components/BrandCard';
+import ProductCard from '../../../components/ProductCard';
+import Breadcrumbs from '../../../components/Breadcrumbs';
 
+// Revert to the original default export structure
 export default async function BrandsPage({
-  searchParams,
+  searchParams: searchParamsProp, // Can keep renamed prop
 }: {
-  searchParams: Promise<{ q?: string; page?: string }>
+  searchParams: Promise<{ q?: string; page?: string }>; // Use Promise type
 }) {
-  const { q, page = '1' } = await searchParams;
+  // Await the promise here
+  const searchParams = await searchParamsProp;
+  const { q, page = '1' } = searchParams;
   const searchQuery = q?.toLowerCase();
   const currentPage = parseInt(page, 10) || 1;
 
-  let brandsData;
-  let productsWithBrands: { product: Product; brand: Brand }[] = [];
-  const totalProductPages = 1;
-
   try {
+    let brandsData;
+    let productsWithBrands: { product: Product; brand: Brand }[] = [];
+    const totalProductPages = 1;
+
     if (searchQuery) {
-      // Search brands and products with pagination
       const searchResults = await searchBrandsAndProducts(searchQuery, currentPage);
       brandsData = {
         brands: searchResults.brands,
@@ -30,10 +32,10 @@ export default async function BrandsPage({
       };
       productsWithBrands = searchResults.productsWithBrands || [];
     } else {
-      // Get all brands with pagination
       brandsData = await getAllBrands(currentPage);
     }
 
+    // Return the page content directly (no layout wrapper)
     return (
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -124,7 +126,7 @@ export default async function BrandsPage({
       </div>
     );
   } catch (error) {
-    console.error('Error in BrandsPage:', error);
-    return <ServerError message="Error loading brands. Please try again later." />;
+    console.error('Error fetching data for BrandsPage:', error);
+    return <ServerError message="Error loading brands or products. Please try again later." />;
   }
 } 

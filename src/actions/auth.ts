@@ -7,6 +7,25 @@ import { createClient } from "@/utils/supabase/server";
 import { userAgent } from "next/server";
 
 
+export async function signInWithGoogle() {
+
+  const origin = (await headers()).get("origin");
+  const supabase = await createClient();
+  const auth_callback_url = `${origin}/auth/callback`
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: auth_callback_url,
+    },
+  });
+  if(error){
+    redirect("/error")
+  } else if(data.url){
+    return redirect(data.url)
+  }
+}
+
 export async function getUserSession() {
     const supabase = await createClient();
     const { data , error } = await supabase.auth.getUser();
@@ -159,8 +178,6 @@ export async function getRole(): Promise<"user" | "admin" | "staff" | null> {
     redirect("/login");
   }
 }
-  
-
 
 export async function getUserProfile(): Promise<{
     status: string;
