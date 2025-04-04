@@ -54,9 +54,11 @@ export function UserNavAuth() {
 
   // Extract user initials for avatar fallback
   const getUserInitials = () => {
-    if (!user?.user_metadata?.fullname) return 'U'
+    // Check for full_name (Google) first, then fullname (Email/Pass)
+    const name = user?.user_metadata?.full_name || user?.user_metadata?.fullname;
+    if (!name) return 'U'
     
-    const nameParts = user.user_metadata.fullname.split(' ')
+    const nameParts = name.split(' ')
     if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase()
     
     return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase()
@@ -76,7 +78,7 @@ export function UserNavAuth() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10">
+          <Avatar className="h-9 w-9">
             <AvatarImage src={user?.user_metadata?.avatar_url || ''} alt={user?.user_metadata?.fullname || 'User'} />
             <AvatarFallback>{getUserInitials()}</AvatarFallback>
           </Avatar>
@@ -85,7 +87,8 @@ export function UserNavAuth() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.user_metadata?.fullname || 'User'}</p>
+            {/* Check for full_name (Google) first, then fullname (Email/Pass) */}
+            <p className="text-sm font-medium leading-none">{user?.user_metadata?.full_name || user?.user_metadata?.fullname || 'User'}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user?.email}
             </p>

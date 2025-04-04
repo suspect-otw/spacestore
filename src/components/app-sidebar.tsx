@@ -116,8 +116,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         
         if (response.status === "success" && response.user) {
           const user = response.user
+          // Use full_name (Google) first, then fallback to fullname (Email/Pass)
+          const displayName = user.user_metadata?.full_name || user.user_metadata?.fullname || "User";
           setUserData({
-            name: user.user_metadata?.fullname || "User",
+            name: displayName, // Use the determined display name
             email: user.email || "",
             avatar: user.user_metadata?.avatar_url || "",
           })

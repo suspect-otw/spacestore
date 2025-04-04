@@ -120,7 +120,7 @@ export default function Pagination({
             href={`${basePath}?${createQueryString(page)}`}
             className={`px-4 py-2 border rounded ${
               currentPage === page
-                ? 'bg-primary text-white border-primary'
+                ? 'bg-primary text-white dark:text-black border-primary'
                 : 'text-primary border-primary hover:bg-primary/10'
             }`}
           >

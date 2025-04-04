@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { EnvelopeOpenIcon, CheckCircledIcon, StarIcon } from '@radix-ui/react-icons';
-
+import Navbar from '@/components/Navbar';
 export default function ConfirmEmailPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      <Navbar />
       <div className="w-full max-w-md space-y-8 rounded-lg border border-border bg-card p-8 shadow-lg">
         <div className="flex flex-col items-center justify-center space-y-2 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">

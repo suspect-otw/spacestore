@@ -1,33 +1,24 @@
-import { getBrandById, getBrandByName, getProductById } from '../../../../../lib/data-service';
+import { getBrandById, getBrandByName, getProductById } from '../../../../../../lib/data-service';
 import { notFound } from 'next/navigation';
-import { ServerError, ProductDetailClient } from '../../../../../components';
+import { ServerError, ProductDetailClient} from '../../../../../../components';
 
-export default async function ProductPage({ 
-  params 
-}: { 
-  params: Promise<{ brandName: string; productId: string }> 
-}) {
+// Helper function to render product details or error
+async function renderProductPageContent(params: { brandName: string; productId: string }) {
   try {
-    const { brandName, productId } = await params;
+    const { brandName, productId } = params;
     
-    // Decode the URL-encoded parameter
     const decodedParam = decodeURIComponent(brandName);
     let brand;
     
-    // Check if the URL is in the new format (contains a dash)
     if (decodedParam.includes('-')) {
-      // Extract the brand id from the parameter
       const [brandIdStr] = decodedParam.split('-');
       const brandId = Number(brandIdStr);
       if (isNaN(brandId)) {
         console.error(`Invalid brand id in URL param: ${decodedParam}`);
         notFound();
       }
-      
-      // Fetch brand using brand id
       brand = await getBrandById(brandId);
     } else {
-      // Fall back to the old method of fetching by name
       brand = await getBrandByName(decodedParam);
     }
     
@@ -42,9 +33,9 @@ export default async function ProductPage({
       notFound();
     }
     
-    // Clean brand name (remove www. if present)
     const cleanBrandName = brand.brandName.replace(/^www\./i, '');
 
+    // Return the client component with fetched data
     return (
       <ProductDetailClient 
         product={product} 
@@ -53,7 +44,29 @@ export default async function ProductPage({
       />
     );
   } catch (error) {
-    console.error('Error in ProductPage:', error);
+    console.error('Error rendering ProductPage content:', error);
+    // Return ServerError on failure
     return <ServerError message="Error loading product details. Please try again later." />;
   }
+}
+
+// Main page component with layout
+export default async function ProductPageWrapper({ 
+  params: paramsProp // Prop is potentially a Promise
+}: { 
+  params: Promise<{ brandName: string; productId: string }> // Correct type hint for the prop
+}) {
+  // Await the params Promise before passing to the render function
+  const resolvedParams = await paramsProp;
+  const pageContent = await renderProductPageContent(resolvedParams);
+
+  return (
+    <div className="flex flex-col min-h-screen">
+
+      <main className="flex-grow">
+        {pageContent} {/* Render ProductDetailClient or ServerError */}
+      </main>
+
+    </div>
+  );
 } 
