@@ -5,7 +5,7 @@ import { User } from "@supabase/supabase-js";
 export default function ClientComponent({ user }: { user: User }) {
   return (
     <div>
-      <h1>Admin Dashboard</h1>
+      <h1>{user?.role} Dashboard</h1>
       <div>
         {Object.entries(user).map(([key, value]) => (
           <p key={key}>

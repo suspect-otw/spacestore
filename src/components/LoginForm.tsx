@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { signIn } from "@/actions/auth";
+import { getRole } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,21 @@ const LoginForm = () => {
     const formData = new FormData(event.currentTarget);
     const result = await signIn(formData);
     if (result.status === "success") {
-      router.push("/admin");
+      const role = await getRole();
+      if (role === "admin") {
+        router.push("/admin");
+      } else if (role === "staff") {
+        router.push("/staff"); // Assuming you have a /staff route
+      } else if (role === "user") {
+        router.push("/dashboard"); // Assuming you have a /dashboard route
+      } else {
+        // Handle unexpected role or error, maybe redirect to a default page or show an error
+        // Although getRole should redirect to /login on error/invalid role
+        console.error("Unexpected user role:", role);
+        setError("Login successful, but could not determine user role for redirection.");
+        // Optional: redirect to a generic logged-in page if needed
+        // router.push("/"); 
+      }
     } else {
       setError(result.status);
     }

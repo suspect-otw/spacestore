@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { ThemeToggle } from "./theme-toggle"
+import { UserNavAuth } from "./user-nav-auth"
 export function SiteHeader() {
   const pathname = usePathname()
   const isDashboard = pathname?.startsWith("/dashboard")
@@ -46,6 +47,7 @@ export function SiteHeader() {
               </Button>
             </>
           )}
+          <UserNavAuth />
           {isDashboard && (
             <ThemeToggle />
           )}
