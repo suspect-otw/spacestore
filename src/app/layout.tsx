@@ -9,7 +9,7 @@ import { ActiveThemeProvider } from "@/components/active-theme"
 
 const META_THEME_COLORS = {
   light: "#ffffff",
-  dark: "#09090b",
+  dark: "#27374D",
 }
 
 // Site configuration
@@ -108,7 +108,7 @@ export default async function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
           enableColorScheme

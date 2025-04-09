@@ -7,8 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { getUser } from '@/actions/auth';
 import { UserNavAuth } from './user-nav-auth';
-import { Button } from './ui/button';
 import { Skeleton } from "@/components/ui/skeleton";
+import Image from 'next/image';
 
 function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T | undefined>(undefined);
@@ -104,13 +104,20 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 w-full bg-transparent backdrop-blur-[5.7px] border-b border-white/70 dark:border-white/10">
+      <nav 
+        className="sticky top-0 z-50 w-full bg-transparent backdrop-blur-[5.7px] border-b border-white/70 dark:border-white/10"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Left section - Logo */}
             <div className="flex-shrink-0">
               <Link href="/" className="flex items-center">
-                <span className="text-2xl font-bold text-[#212227] dark:text-white">ProductReq</span>
+              <Image
+                 src="https://www.spacestoreone.com/wp-content/uploads/2023/08/cropped-cropped-onlinelogomaker-080923-2325-3883-500photoAid-removed-background.png"
+                 width={100}
+                 height={90}
+                 alt="Space Store One Logo"
+                 />
               </Link>
             </div>
 

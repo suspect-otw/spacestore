@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#BDD4E7] to-[#8693AB] dark:from-[#212227] dark:to-[#637074] py-20">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#BDD4E7] to-[#8693AB] dark:from-[#212227] dark:to-[#637074] py-10">
         {/* Lighting effect circles */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#AAB9CF]/20 dark:bg-[#8693AB]/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#8693AB]/20 dark:bg-[#637074]/10 rounded-full blur-3xl"></div>

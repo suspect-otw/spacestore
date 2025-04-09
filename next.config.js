@@ -1,6 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Add images configuration
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.spacestoreone.com',
+        port: '',
+        pathname: '/wp-content/uploads/**',
+      },
+    ],
+  },
   // Simple path alias configuration
   webpack: (config) => {
     config.resolve = config.resolve || {};

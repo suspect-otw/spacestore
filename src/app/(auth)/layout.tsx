@@ -1,5 +1,8 @@
 import { getRole, getUserSession } from "@/actions/auth";
 import { redirect } from "next/navigation";
+// Import the requested components
+import { HeroHeader } from '@/components/NewNavbar';
+import { Footer } from '@/components';
 
 export default async function AuthLayout({
   children,
@@ -21,5 +24,12 @@ export default async function AuthLayout({
       redirect("/login");
     }
   }
-  return <>{children}</>;
+  // Add the layout structure with Navbar, Footer, and dark bg
+  return (
+    <div className="flex flex-col min-h-screen dark:bg-[#212227]">
+      <HeroHeader/>
+      <main className="flex-grow pt-20">{children}</main>
+      <Footer />
+    </div>
+  );
 }

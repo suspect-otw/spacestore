@@ -1,11 +1,8 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import SignUpForm from "@/components/SignUpForm";
 
 export default function RegisterPage() {
   return (
     <div className="flex flex-col min-h-screen w-full">
-      <Navbar />
       <div className="flex-1 grid min-h-[calc(100vh-4rem)] lg:grid-cols-2 w-full">
         <div className="flex flex-col p-6 md:p-10">
           <div className="flex flex-1 items-center justify-center">
@@ -22,7 +19,6 @@ export default function RegisterPage() {
           />
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
