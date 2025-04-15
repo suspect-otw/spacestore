@@ -26,10 +26,23 @@ const menuItems = [
     { name: 'Contact', href: '/contact' },
 ]
 
-export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
+// Type for user data passed from layout
+type UserData = {
+    fullname: string;
+    email: string;
+    phoneNumber: string;
+    role: string;
+} | null;
+
+export const HeroHeader = ({ 
+    hasAuth = false, 
+    userData = null 
+}: { 
+    hasAuth?: boolean, 
+    userData?: UserData 
+}) => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
-    const [userData, setUserData] = React.useState<any>(null)
     const pathname = usePathname();
     const isAdmin = pathname?.startsWith("/admin");
 
@@ -41,45 +54,11 @@ export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-    // Effect to get user data for mobile display
-    React.useEffect(() => {
-        if (hasAuth) {
-            // Try to get data from admin layout first
-            const scriptTag = document.getElementById('admin-user-data');
-            if (scriptTag) {
-                try {
-                    const data = JSON.parse(scriptTag.textContent || '{}');
-                    setUserData({
-                        email: data.email,
-                        user_metadata: {
-                            full_name: data.name,
-                            avatar_url: data.avatar
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error parsing user data:', error);
-                }
-            }
-            
-            // For non-admin routes, listen for user data from UserNavAuth
-            const handleUserDataAvailable = (event: CustomEvent) => {
-                setUserData(event.detail);
-            };
-            
-            window.addEventListener('user-data-available' as any, handleUserDataAvailable as any);
-            
-            return () => {
-                window.removeEventListener('user-data-available' as any, handleUserDataAvailable as any);
-            };
-        }
-    }, [hasAuth]);
-
-    // Function to get user initials for avatar
+    // Function to get user initials from userData
     const getInitials = () => {
-        const name = userData?.user_metadata?.full_name || userData?.user_metadata?.fullname;
-        if (!name) return 'U';
+        if (!userData?.fullname) return 'U';
         
-        const nameParts = name.split(' ');
+        const nameParts = userData.fullname.split(' ');
         if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
         
         return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
@@ -158,12 +137,11 @@ export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
                                                 <Button variant="ghost" className="w-full flex items-center justify-between p-0 h-auto hover:bg-transparent">
                                                     <div className="flex items-center gap-3">
                                                         <Avatar className="h-10 w-10 rounded-full">
-                                                            <AvatarImage src={userData?.user_metadata?.avatar_url || ''} alt={userData?.user_metadata?.full_name || 'User'} />
                                                             <AvatarFallback>{getInitials()}</AvatarFallback>
                                                         </Avatar>
                                                         <div className="grid flex-1 text-left text-sm leading-tight">
-                                                            <span className="truncate font-medium">{userData?.user_metadata?.full_name || userData?.user_metadata?.fullname || 'User'}</span>
-                                                            <span className="text-muted-foreground truncate text-xs">{userData?.email || ''}</span>
+                                                            <span className="truncate font-medium">{userData.fullname}</span>
+                                                            <span className="text-muted-foreground truncate text-xs">{userData.email}</span>
                                                         </div>
                                                     </div>
                                                     <MoreVertical className="size-5" />
@@ -172,8 +150,8 @@ export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
                                             <DropdownMenuContent align="end" className="w-56">
                                                 <DropdownMenuLabel className="font-normal">
                                                     <div className="flex flex-col space-y-1">
-                                                        <p className="text-sm font-medium leading-none">{userData?.user_metadata?.full_name || userData?.user_metadata?.fullname || 'User'}</p>
-                                                        <p className="text-xs leading-none text-muted-foreground">{userData?.email || ''}</p>
+                                                        <p className="text-sm font-medium leading-none">{userData.fullname}</p>
+                                                        <p className="text-xs leading-none text-muted-foreground">{userData.email}</p>
                                                     </div>
                                                 </DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
@@ -198,7 +176,7 @@ export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
                             </div>                            
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                                 {hasAuth ? (
-                                    <div className="flex items-center">
+                                    <div className="items-center hidden lg:flex">
                                         <UserNavAuth />
                                     </div>
                                 ) : (

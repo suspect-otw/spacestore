@@ -11,10 +11,7 @@ export default async function AuthLayout({
 }>)
 {
   const response = await getUserSession();
-  const hasAuth = !!response?.user;
-  
-  // If authenticated, redirect to the appropriate dashboard
-  if(hasAuth){
+  if(response?.user){
     const role = await getRole();
     if (role === "admin") {
       redirect("/admin");
@@ -30,7 +27,7 @@ export default async function AuthLayout({
   // Add the layout structure with Navbar, Footer, and dark bg
   return (
     <div className="flex flex-col min-h-screen dark:bg-[#212227]">
-      <HeroHeader hasAuth={hasAuth}/>
+      <HeroHeader/>
       <main className="flex-grow pt-20">{children}</main>
       <Footer />
     </div>
