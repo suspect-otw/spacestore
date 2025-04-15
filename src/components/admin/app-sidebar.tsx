@@ -24,8 +24,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useAdminUser } from "@/context/admin-user-context"
-import { signOut } from "@/actions/auth"
+import { useEffect, useState } from "react"
+import { getUser, signOut } from "@/actions/auth"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const navData = {
@@ -71,7 +71,39 @@ const navData = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { userData } = useAdminUser()
+  const [userData, setUserData] = useState({
+    name: "",
+    email: "",
+    avatar: "",
+  })
+  const [loading, setLoading] = useState(true)
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        const response = await getUser()
+
+        if (response.status === "success" && response.user) {
+          const user = response.user
+          // Use full_name (Google) first, then fallback to fullname (Email/Pass)
+          const displayName = user.user_metadata?.full_name || user.user_metadata?.fullname || "User";
+
+          setUserData({
+            name: displayName, // Use the determined display name
+            email: user.email || "",
+            avatar: user.user_metadata?.avatar_url || "",
+          })
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUserData()
+  }, [])
   
   // Handle logout using the server action
   const handleLogout = async () => {
@@ -100,7 +132,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={navData.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        {!userData ? (
+        {loading ? (
           <div className="flex items-center space-x-3 p-3">
             <Skeleton className="h-10 w-10 rounded-full" />
             <div className="space-y-2 flex-1">
@@ -108,16 +140,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <Skeleton className="h-4 w-[100px]" />
             </div>
           </div>
-        ) : (
-          <NavUser 
-            user={{
-              name: userData.name,
-              email: userData.email,
-              avatar: userData.avatar
-            }} 
-            onLogout={handleLogout} 
-          />
-        )}
+        ) : userData ? (
+          <NavUser user={userData} onLogout={handleLogout} />
+        ) : null}
       </SidebarFooter>
     </Sidebar>
   )
