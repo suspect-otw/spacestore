@@ -1,7 +1,7 @@
 'use client'
 import { ThemeToggle } from '@/components/theme-toggle';
 import Link from 'next/link'
-import { Menu, X, User as UserIcon, LogOut } from 'lucide-react'
+import { Menu, X, User as UserIcon, LogOut, MoreVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
@@ -10,6 +10,14 @@ import { UserNavAuth } from '@/components/user-nav-auth'
 import { usePathname } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { signOut } from '@/actions/auth'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const menuItems = [
     { name: 'Home', href: '/' },
@@ -18,70 +26,12 @@ const menuItems = [
     { name: 'Contact', href: '/contact' },
 ]
 
-// Mobile user component that shows avatar with name and email
-const MobileUserComponent = ({ userData }: { userData: any }) => {
-    const pathname = usePathname();
-    const isAdmin = pathname?.startsWith("/admin");
-    
-    // Function to get user initials for avatar
-    const getInitials = () => {
-        const name = userData?.user_metadata?.full_name || userData?.user_metadata?.fullname;
-        if (!name) return 'U';
-        
-        const nameParts = name.split(' ');
-        if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
-        
-        return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
-    };
-
-    // Handle logout
-    const handleLogout = async () => {
-        await signOut();
-    };
-
-    const displayName = userData?.user_metadata?.full_name || userData?.user_metadata?.fullname || 'User';
-    const email = userData?.email || '';
-
-    return (
-        <div className="flex items-center w-full border-t pt-4 mt-2">
-            <div className="flex items-center gap-3 w-full">
-                <Avatar className="h-10 w-10 rounded-full">
-                    <AvatarImage src={userData?.user_metadata?.avatar_url || ''} alt={displayName} />
-                    <AvatarFallback>{getInitials()}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                    <p className="text-sm font-medium">{displayName}</p>
-                    <p className="text-xs text-muted-foreground">{email}</p>
-                </div>
-            </div>
-            <div className="flex gap-2">
-                <Button 
-                    variant="ghost" 
-                    size="icon"
-                    asChild
-                    className="h-8 w-8"
-                >
-                    <Link href={isAdmin ? '/admin/profile' : '/dashboard/profile'}>
-                        <UserIcon className="h-4 w-4" />
-                    </Link>
-                </Button>
-                <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={handleLogout}
-                    className="h-8 w-8"
-                >
-                    <LogOut className="h-4 w-4" />
-                </Button>
-            </div>
-        </div>
-    );
-};
-
 export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
     const [userData, setUserData] = React.useState<any>(null)
+    const pathname = usePathname();
+    const isAdmin = pathname?.startsWith("/admin");
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -91,7 +41,7 @@ export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-    // Effect to get user data for mobile display from the UserNavAuth component
+    // Effect to get user data for mobile display
     React.useEffect(() => {
         if (hasAuth) {
             // Try to get data from admin layout first
@@ -123,6 +73,22 @@ export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
             };
         }
     }, [hasAuth]);
+
+    // Function to get user initials for avatar
+    const getInitials = () => {
+        const name = userData?.user_metadata?.full_name || userData?.user_metadata?.fullname;
+        if (!name) return 'U';
+        
+        const nameParts = name.split(' ');
+        if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
+        
+        return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+    };
+
+    // Handle logout
+    const handleLogout = async () => {
+        await signOut();
+    };
 
     return (
         <header>
@@ -186,7 +152,45 @@ export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
                                     ))}
                                 </ul>
                                 {hasAuth && userData && (
-                                    <MobileUserComponent userData={userData} />
+                                    <div className="border-t pt-6 mt-6">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" className="w-full flex items-center justify-between p-0 h-auto hover:bg-transparent">
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar className="h-10 w-10 rounded-full">
+                                                            <AvatarImage src={userData?.user_metadata?.avatar_url || ''} alt={userData?.user_metadata?.full_name || 'User'} />
+                                                            <AvatarFallback>{getInitials()}</AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="grid flex-1 text-left text-sm leading-tight">
+                                                            <span className="truncate font-medium">{userData?.user_metadata?.full_name || userData?.user_metadata?.fullname || 'User'}</span>
+                                                            <span className="text-muted-foreground truncate text-xs">{userData?.email || ''}</span>
+                                                        </div>
+                                                    </div>
+                                                    <MoreVertical className="size-5" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="w-56">
+                                                <DropdownMenuLabel className="font-normal">
+                                                    <div className="flex flex-col space-y-1">
+                                                        <p className="text-sm font-medium leading-none">{userData?.user_metadata?.full_name || userData?.user_metadata?.fullname || 'User'}</p>
+                                                        <p className="text-xs leading-none text-muted-foreground">{userData?.email || ''}</p>
+                                                    </div>
+                                                </DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={isAdmin ? '/admin/profile' : '/dashboard/profile'}>
+                                                        <UserIcon className="mr-2 h-4 w-4" />
+                                                        <span>Profile</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={handleLogout}>
+                                                    <LogOut className="mr-2 h-4 w-4" />
+                                                    <span>Log out</span>
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
                                 )}
                             </div>
                             <div className="hidden lg:flex">
