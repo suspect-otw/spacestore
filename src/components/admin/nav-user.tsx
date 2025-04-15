@@ -42,11 +42,13 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   
-  // Get initials for avatar
+  // Get initials for avatar - matching user-nav-auth component style
   const getInitials = () => {
     if (!user.name) return "U";
+    
     const nameParts = user.name.split(" ");
     if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
+    
     return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
   };
 
@@ -61,7 +63,7 @@ export function NavUser({
             >
               <Avatar className="h-10 w-10 shrink-0 rounded-full">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-full text-base font-medium">
+                <AvatarFallback>
                   {getInitials()}
                 </AvatarFallback>
               </Avatar>
@@ -75,7 +77,7 @@ export function NavUser({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
@@ -84,11 +86,11 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-full">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-full text-base">
+                  <AvatarFallback>
                     {getInitials()}
                   </AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid flex-1 text-left text-xs leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
                   <span className="text-muted-foreground truncate text-xs">
                     {user.email}
