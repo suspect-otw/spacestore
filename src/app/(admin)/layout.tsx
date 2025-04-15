@@ -8,22 +8,19 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/admin/app-sidebar";
 import { SiteHeader } from "@/components/admin/site-header";
+import { cache } from "react";
 
-// Create server component to fetch user data once
-async function AdminAuthWrapper({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+// Create cached version of user auth to prevent duplicate requests
+const getAdminUser = cache(async () => {
   const supabase = await createClient();
   
   // Get session for server-side validation
   const { data: { user } } = await supabase.auth.getUser();
 
-  // If no session, redirect immediately
+  // If no session, return null
   if (!user) {
     console.log("[Admin Layout] No user found, redirecting to login");
-    redirect("/login");
+    return null;
   }
 
   // Server-side log
@@ -43,22 +40,37 @@ async function AdminAuthWrapper({
   // Server-side log
   console.log("[Admin Layout] User profile:", profile);
 
-  // If no profile or not admin, redirect
+  // If no profile or not admin, return null
   if (!profile || profile.role !== "admin") {
-    console.log("[Admin Layout] User not admin, redirecting to login", { role: profile?.role });
-    redirect("/login");
+    console.log("[Admin Layout] User not admin", { role: profile?.role });
+    return null;
   }
 
-  // Pass user data to client through search params to avoid multiple fetches
+  // Return user data
   const userData = {
     id: user.id,
     email: user.email,
-    name: user.user_metadata?.full_name || user.user_metadata?.name || "Admin",
+    name: user.user_metadata?.full_name || user.user_metadata?.fullname || "Admin",
     avatar: user.user_metadata?.avatar_url || "",
     role: profile.role
   };
 
   console.log("[Admin Layout] Admin authenticated successfully:", userData);
+  return userData;
+});
+
+// Create server component to fetch user data once
+async function AdminAuthWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const userData = await getAdminUser();
+  
+  // If no user data, redirect to login
+  if (!userData) {
+    redirect("/login");
+  }
 
   return (
     <>
