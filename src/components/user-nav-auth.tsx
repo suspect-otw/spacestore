@@ -86,6 +86,13 @@ export function UserNavAuth() {
     try {
       await signOut()
       setUser(null)
+      // Clear session storage on logout to synchronize state across components
+      sessionStorage.removeItem('spacestore_user')
+      // Dispatch an event to notify other components
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'spacestore_user',
+        newValue: null
+      }))
     } catch (error) {
       console.error('Error signing out:', error)
     }
