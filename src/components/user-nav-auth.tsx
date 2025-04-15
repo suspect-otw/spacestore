@@ -66,6 +66,12 @@ export function UserNavAuth() {
               metadata: response.user.user_metadata
             });
             setUser(response.user)
+            
+            // Dispatch event with user data for other components
+            const event = new CustomEvent('user-data-available', {
+              detail: response.user
+            });
+            window.dispatchEvent(event);
           } else {
             console.log('[UserNavAuth] No user found or auth failed');
             setUser(null)

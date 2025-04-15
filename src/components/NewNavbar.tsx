@@ -1,12 +1,15 @@
 'use client'
 import { ThemeToggle } from '@/components/theme-toggle';
 import Link from 'next/link'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, User as UserIcon, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { UserNavAuth } from '@/components/user-nav-auth'
+import { usePathname } from 'next/navigation'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { signOut } from '@/actions/auth'
 
 const menuItems = [
     { name: 'Home', href: '/' },
@@ -15,9 +18,70 @@ const menuItems = [
     { name: 'Contact', href: '/contact' },
 ]
 
+// Mobile user component that shows avatar with name and email
+const MobileUserComponent = ({ userData }: { userData: any }) => {
+    const pathname = usePathname();
+    const isAdmin = pathname?.startsWith("/admin");
+    
+    // Function to get user initials for avatar
+    const getInitials = () => {
+        const name = userData?.user_metadata?.full_name || userData?.user_metadata?.fullname;
+        if (!name) return 'U';
+        
+        const nameParts = name.split(' ');
+        if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
+        
+        return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+    };
+
+    // Handle logout
+    const handleLogout = async () => {
+        await signOut();
+    };
+
+    const displayName = userData?.user_metadata?.full_name || userData?.user_metadata?.fullname || 'User';
+    const email = userData?.email || '';
+
+    return (
+        <div className="flex items-center w-full border-t pt-4 mt-2">
+            <div className="flex items-center gap-3 w-full">
+                <Avatar className="h-10 w-10 rounded-full">
+                    <AvatarImage src={userData?.user_metadata?.avatar_url || ''} alt={displayName} />
+                    <AvatarFallback>{getInitials()}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                    <p className="text-sm font-medium">{displayName}</p>
+                    <p className="text-xs text-muted-foreground">{email}</p>
+                </div>
+            </div>
+            <div className="flex gap-2">
+                <Button 
+                    variant="ghost" 
+                    size="icon"
+                    asChild
+                    className="h-8 w-8"
+                >
+                    <Link href={isAdmin ? '/admin/profile' : '/dashboard/profile'}>
+                        <UserIcon className="h-4 w-4" />
+                    </Link>
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={handleLogout}
+                    className="h-8 w-8"
+                >
+                    <LogOut className="h-4 w-4" />
+                </Button>
+            </div>
+        </div>
+    );
+};
+
 export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
+    const [userData, setUserData] = React.useState<any>(null)
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -26,6 +90,40 @@ export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
+    // Effect to get user data for mobile display from the UserNavAuth component
+    React.useEffect(() => {
+        if (hasAuth) {
+            // Try to get data from admin layout first
+            const scriptTag = document.getElementById('admin-user-data');
+            if (scriptTag) {
+                try {
+                    const data = JSON.parse(scriptTag.textContent || '{}');
+                    setUserData({
+                        email: data.email,
+                        user_metadata: {
+                            full_name: data.name,
+                            avatar_url: data.avatar
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                }
+            }
+            
+            // For non-admin routes, listen for user data from UserNavAuth
+            const handleUserDataAvailable = (event: CustomEvent) => {
+                setUserData(event.detail);
+            };
+            
+            window.addEventListener('user-data-available' as any, handleUserDataAvailable as any);
+            
+            return () => {
+                window.removeEventListener('user-data-available' as any, handleUserDataAvailable as any);
+            };
+        }
+    }, [hasAuth]);
+
     return (
         <header>
             <nav
@@ -87,8 +185,11 @@ export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
                                         </li>
                                     ))}
                                 </ul>
+                                {hasAuth && userData && (
+                                    <MobileUserComponent userData={userData} />
+                                )}
                             </div>
-                            <div className="hidden lg:block">
+                            <div className="hidden lg:flex">
                                 <ThemeToggle />
                             </div>                            
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
