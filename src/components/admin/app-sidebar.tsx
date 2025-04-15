@@ -135,9 +135,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         {loading ? (
-          <div className="flex items-center space-x-3 p-3">
-            <Skeleton className="h-10 w-10 rounded-full" />
-            <div className="space-y-2 flex-1">
+          <div className="flex items-center gap-3 p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:py-3">
+            <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+            <div className="space-y-2 flex-1 group-data-[collapsible=icon]:hidden">
               <Skeleton className="h-4 w-[150px]" />
               <Skeleton className="h-4 w-[100px]" />
             </div>
