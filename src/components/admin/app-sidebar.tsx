@@ -25,7 +25,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useEffect, useState } from "react"
-import { getUser, signOut } from "@/actions/auth"
+import { signOut } from "@/actions/auth"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const navData = {
@@ -71,38 +71,29 @@ const navData = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    avatar: "",
-  })
+  const [userData, setUserData] = useState<{
+    name: string,
+    email: string,
+    avatar: string
+  } | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Fetch user data on component mount
+  // Get user data from the layout script tag
   useEffect(() => {
-    async function fetchUserData() {
+    const scriptTag = document.getElementById('admin-user-data')
+    if (scriptTag) {
       try {
-        const response = await getUser()
-
-        if (response.status === "success" && response.user) {
-          const user = response.user
-          // Use full_name (Google) first, then fallback to fullname (Email/Pass)
-          const displayName = user.user_metadata?.full_name || user.user_metadata?.fullname || "User";
-
-          setUserData({
-            name: displayName, // Use the determined display name
-            email: user.email || "",
-            avatar: user.user_metadata?.avatar_url || "",
-          })
-        }
+        const data = JSON.parse(scriptTag.textContent || '{}')
+        setUserData({
+          name: data.name || '',
+          email: data.email || '',
+          avatar: data.avatar || ''
+        })
       } catch (error) {
-        console.error("Error fetching user data:", error)
-      } finally {
-        setLoading(false)
+        console.error('Error parsing user data:', error)
       }
     }
-
-    fetchUserData()
+    setLoading(false)
   }, [])
   
   // Handle logout using the server action

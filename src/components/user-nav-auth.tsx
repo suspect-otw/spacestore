@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,33 +20,58 @@ export function UserNavAuth() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const pathname = usePathname()
+  const isAdmin = pathname?.startsWith("/admin")
 
   useEffect(() => {
     async function fetchUserData() {
+      // In admin routes, get data from shared script tag
+      if (isAdmin) {
         try {
-            const response = await getUser();
-            
-            if (response.status === "success" && response.user) {
-                setUser(response.user); // Set user if fetch is successful and user exists
-            } else {
-                setUser(null); // Explicitly set user to null if not logged in or error
-            }
+          const scriptTag = document.getElementById('admin-user-data')
+          if (scriptTag) {
+            const data = JSON.parse(scriptTag.textContent || '{}')
+            // Format data to match user object structure
+            setUser({
+              email: data.email,
+              user_metadata: {
+                full_name: data.name,
+                avatar_url: data.avatar
+              }
+            })
+          }
         } catch (error) {
-            console.error('Error fetching user session:', error);
-            setUser(null); // Set user to null on error
+          console.error('Error parsing admin user data:', error)
+          setUser(null)
         } finally {
-            setLoading(false);
+          setLoading(false)
         }
+      } else {
+        // Outside admin, use normal fetch
+        try {
+          const response = await getUser();
+          
+          if (response.status === "success" && response.user) {
+            setUser(response.user)
+          } else {
+            setUser(null)
+          }
+        } catch (error) {
+          console.error('Error fetching user session:', error)
+          setUser(null)
+        } finally {
+          setLoading(false)
+        }
+      }
     }
 
     fetchUserData();
-}, []);
+  }, [isAdmin]);
 
   async function handleSignOut() {
     try {
       await signOut()
-      setUser(null); // Update state after sign out
-      // Note: No need for router.push as signOut likely handles redirect
+      setUser(null)
     } catch (error) {
       console.error('Error signing out:', error)
     }
@@ -95,14 +120,16 @@ export function UserNavAuth() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
+        <DropdownMenuItem onClick={() => router.push(isAdmin ? '/admin/profile' : '/dashboard/profile')}>
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push('/dashboard/settings')}>
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Settings</span>
-        </DropdownMenuItem>
+        {!isAdmin && (
+          <DropdownMenuItem onClick={() => router.push('/dashboard/settings')}>
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Settings</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
