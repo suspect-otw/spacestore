@@ -44,13 +44,18 @@ export const HeroHeader = () => {
                                 />
                             </Link>
 
-                            <button
-                                onClick={() => setMenuState(!menuState)}
-                                aria-label={menuState == true ? 'Close Menu' : 'Open Menu'}
-                                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
-                                <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
-                                <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
-                            </button>
+                            <div className="flex items-center gap-4 ">
+                                <div className="block lg:hidden">
+                                    <ThemeToggle />
+                                </div>
+                                <button
+                                    onClick={() => setMenuState(!menuState)}
+                                    aria-label={menuState == true ? 'Close Menu' : 'Open Menu'}
+                                    className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
+                                    <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
+                                    <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
+                                </button>
+                            </div>
                         </div>
 
                         <div className="absolute inset-0 m-auto hidden size-fit lg:block">
@@ -81,12 +86,15 @@ export const HeroHeader = () => {
                                     ))}
                                 </ul>
                             </div>
+                            <div className="hidden lg:block">
+                                <ThemeToggle />
+                            </div>                            
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                                 <Button
                                     asChild
                                     variant="outline"
                                     size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
+                                    className={cn(isScrolled && 'hidden')}>
                                     <Link href="/login">
                                         <span>Login</span>
                                     </Link>
@@ -94,7 +102,7 @@ export const HeroHeader = () => {
                                 <Button
                                     asChild
                                     size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
+                                    className={cn(isScrolled && 'hidden')}>
                                     <Link href="/register">
                                         <span>Sign Up</span>
                                     </Link>
@@ -102,7 +110,7 @@ export const HeroHeader = () => {
                                 <Button
                                     asChild
                                     size="sm"
-                                    className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
+                                    className={cn(isScrolled ? 'inline-flex' : 'hidden')}>
                                     <Link href="/register">
                                         <span>Sign Up</span>
                                     </Link>
