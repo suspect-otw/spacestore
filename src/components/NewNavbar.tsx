@@ -6,10 +6,7 @@ import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation';
-import { UserNavAuth } from '@/components/user-nav-auth';
-import { getUser } from '@/actions/auth';
-import { Skeleton } from '@/components/ui/skeleton';
+import { UserNavAuth } from '@/components/user-nav-auth'
 
 const menuItems = [
     { name: 'Home', href: '/' },
@@ -18,110 +15,7 @@ const menuItems = [
     { name: 'Contact', href: '/contact' },
 ]
 
-// Create client component to handle auth state
-const AuthButtons = ({ isScrolled }: { isScrolled: boolean }) => {
-    const [user, setUser] = React.useState<any>(null);
-    const [loading, setLoading] = React.useState(true);
-    const pathname = usePathname();
-    
-    // Check if we're in admin section to avoid duplicate fetches
-    const isAdmin = pathname?.startsWith('/admin');
-
-    React.useEffect(() => {
-        // Skip fetch if we're in admin section (already handled there)
-        if (isAdmin) {
-            setLoading(false);
-            return;
-        }
-
-        // Use sessionStorage to cache auth state during navigation
-        const checkAuth = async () => {
-            try {
-                // Try to get from session storage first
-                const cachedUser = sessionStorage.getItem('spacestore_user');
-                if (cachedUser) {
-                    setUser(JSON.parse(cachedUser));
-                    setLoading(false);
-                    return;
-                }
-                
-                // If no cached data, fetch from server
-                const response = await getUser();
-                
-                if (response.status === "success" && response.user) {
-                    // Store in session storage
-                    sessionStorage.setItem('spacestore_user', JSON.stringify(response.user));
-                    setUser(response.user);
-                } else {
-                    setUser(null);
-                    // Clear session storage if not authenticated
-                    sessionStorage.removeItem('spacestore_user');
-                }
-            } catch (error) {
-                console.error('Error checking auth state:', error);
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-        
-        checkAuth();
-        
-        // Listen for auth state changes from other components
-        const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === 'spacestore_user') {
-                if (e.newValue) {
-                    setUser(JSON.parse(e.newValue));
-                } else {
-                    setUser(null);
-                }
-            }
-        };
-        
-        window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
-    }, [isAdmin]);
-
-    if (loading) {
-        return <Skeleton className="h-9 w-20" />;
-    }
-
-    if (user) {
-        return <UserNavAuth />;
-    }
-
-    return (
-        <>
-            <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className={cn(isScrolled && 'hidden')}>
-                <Link href="/login">
-                    <span>Login</span>
-                </Link>
-            </Button>
-            <Button
-                asChild
-                size="sm"
-                className={cn(isScrolled && 'hidden')}>
-                <Link href="/register">
-                    <span>Sign Up</span>
-                </Link>
-            </Button>
-            <Button
-                asChild
-                size="sm"
-                className={cn(isScrolled ? 'inline-flex' : 'hidden')}>
-                <Link href="/register">
-                    <span>Sign Up</span>
-                </Link>
-            </Button>
-        </>
-    );
-};
-
-export const HeroHeader = () => {
+export const HeroHeader = ({ hasAuth = false }: { hasAuth?: boolean }) => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
 
@@ -132,7 +26,6 @@ export const HeroHeader = () => {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
-    
     return (
         <header>
             <nav
@@ -199,7 +92,37 @@ export const HeroHeader = () => {
                                 <ThemeToggle />
                             </div>                            
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                                <AuthButtons isScrolled={isScrolled} />
+                                {hasAuth ? (
+                                    <UserNavAuth />
+                                ) : (
+                                    <>
+                                        <Button
+                                            asChild
+                                            variant="outline"
+                                            size="sm"
+                                            className={cn(isScrolled && 'hidden')}>
+                                            <Link href="/login">
+                                                <span>Login</span>
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            asChild
+                                            size="sm"
+                                            className={cn(isScrolled && 'hidden')}>
+                                            <Link href="/register">
+                                                <span>Sign Up</span>
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            asChild
+                                            size="sm"
+                                            className={cn(isScrolled ? 'inline-flex' : 'hidden')}>
+                                            <Link href="/register">
+                                                <span>Sign Up</span>
+                                            </Link>
+                                        </Button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

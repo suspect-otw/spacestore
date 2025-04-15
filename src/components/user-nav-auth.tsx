@@ -86,13 +86,6 @@ export function UserNavAuth() {
     try {
       await signOut()
       setUser(null)
-      // Clear session storage on logout to synchronize state across components
-      sessionStorage.removeItem('spacestore_user')
-      // Dispatch an event to notify other components
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: 'spacestore_user',
-        newValue: null
-      }))
     } catch (error) {
       console.error('Error signing out:', error)
     }
@@ -121,16 +114,16 @@ export function UserNavAuth() {
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10">
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 flex items-center justify-center">
+          <Avatar className="h-8 w-8">
             <AvatarImage src={user?.user_metadata?.avatar_url || ''} alt={user?.user_metadata?.fullname || 'User'} />
             <AvatarFallback>{getUserInitials()}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-56" align="end" forceMount sideOffset={8}>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             {/* Check for full_name (Google) first, then fullname (Email/Pass) */}
