@@ -21,7 +21,17 @@ async function AdminAuthWrapper({
   const { data: { user } } = await supabase.auth.getUser();
 
   // If no session, redirect immediately
-  if (!user) redirect("/login");
+  if (!user) {
+    console.log("[Admin Layout] No user found, redirecting to login");
+    redirect("/login");
+  }
+
+  // Server-side log
+  console.log("[Admin Layout] User authenticated:", {
+    id: user.id,
+    email: user.email,
+    metadata: user.user_metadata
+  });
 
   // Fetch profile from server-side
   const { data: profile } = await supabase
@@ -30,8 +40,14 @@ async function AdminAuthWrapper({
     .eq("id", user.id)
     .single();
 
+  // Server-side log
+  console.log("[Admin Layout] User profile:", profile);
+
   // If no profile or not admin, redirect
-  if (!profile || profile.role !== "admin") redirect("/login");
+  if (!profile || profile.role !== "admin") {
+    console.log("[Admin Layout] User not admin, redirecting to login", { role: profile?.role });
+    redirect("/login");
+  }
 
   // Pass user data to client through search params to avoid multiple fetches
   const userData = {
@@ -42,6 +58,8 @@ async function AdminAuthWrapper({
     role: profile.role
   };
 
+  console.log("[Admin Layout] Admin authenticated successfully:", userData);
+
   return (
     <>
       <script
@@ -49,6 +67,23 @@ async function AdminAuthWrapper({
         type="application/json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(userData)
+        }}
+      />
+      {/* Add client-side debug logger */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              try {
+                const userData = JSON.parse(document.getElementById('admin-user-data').textContent || '{}');
+                console.log('%c🔐 Admin User Data:', 'background: #4285F4; color: white; padding: 2px 5px; border-radius: 3px;', userData);
+                console.log('%c👤 User Role:', 'background: #0F9D58; color: white; padding: 2px 5px; border-radius: 3px;', userData.role);
+                console.log('%c📧 User Email:', 'background: #DB4437; color: white; padding: 2px 5px; border-radius: 3px;', userData.email);
+              } catch (e) {
+                console.error('Error displaying admin data:', e);
+              }
+            })();
+          `
         }}
       />
       {children}

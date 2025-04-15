@@ -25,12 +25,16 @@ export function UserNavAuth() {
 
   useEffect(() => {
     async function fetchUserData() {
+      console.log(`[UserNavAuth] Running in ${isAdmin ? 'ADMIN' : 'REGULAR'} mode`);
+      
       // In admin routes, get data from shared script tag
       if (isAdmin) {
         try {
+          console.log('[UserNavAuth] Attempting to get data from admin-user-data script tag');
           const scriptTag = document.getElementById('admin-user-data')
           if (scriptTag) {
             const data = JSON.parse(scriptTag.textContent || '{}')
+            console.log('[UserNavAuth] Found admin data from script tag:', data);
             // Format data to match user object structure
             setUser({
               email: data.email,
@@ -39,25 +43,35 @@ export function UserNavAuth() {
                 avatar_url: data.avatar
               }
             })
+          } else {
+            console.warn('[UserNavAuth] admin-user-data script tag not found!');
           }
         } catch (error) {
-          console.error('Error parsing admin user data:', error)
+          console.error('[UserNavAuth] Error parsing admin user data:', error)
           setUser(null)
         } finally {
           setLoading(false)
         }
       } else {
         // Outside admin, use normal fetch
+        console.log('[UserNavAuth] Using standard fetch for user data');
         try {
           const response = await getUser();
+          console.log('[UserNavAuth] Auth response:', response);
           
           if (response.status === "success" && response.user) {
+            console.log('[UserNavAuth] User authenticated successfully:', {
+              email: response.user.email,
+              role: response.user.role,
+              metadata: response.user.user_metadata
+            });
             setUser(response.user)
           } else {
+            console.log('[UserNavAuth] No user found or auth failed');
             setUser(null)
           }
         } catch (error) {
-          console.error('Error fetching user session:', error)
+          console.error('[UserNavAuth] Error fetching user session:', error)
           setUser(null)
         } finally {
           setLoading(false)

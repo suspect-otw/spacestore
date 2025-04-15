@@ -80,24 +80,35 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   // Get user data from the layout script tag
   useEffect(() => {
+    console.log('[AppSidebar] Looking for admin-user-data script tag');
     const scriptTag = document.getElementById('admin-user-data')
     if (scriptTag) {
       try {
+        console.log('[AppSidebar] Script tag found, parsing data');
         const data = JSON.parse(scriptTag.textContent || '{}')
+        console.log('[AppSidebar] Admin user data parsed:', data);
         setUserData({
           name: data.name || '',
           email: data.email || '',
           avatar: data.avatar || ''
         })
+        console.log('[AppSidebar] User data set for sidebar:', {
+          name: data.name || '',
+          email: data.email || '',
+          avatar: Boolean(data.avatar)
+        });
       } catch (error) {
-        console.error('Error parsing user data:', error)
+        console.error('[AppSidebar] Error parsing user data:', error)
       }
+    } else {
+      console.warn('[AppSidebar] admin-user-data script tag not found!');
     }
     setLoading(false)
   }, [])
   
   // Handle logout using the server action
   const handleLogout = async () => {
+    console.log('[AppSidebar] Logging out user');
     await signOut()
   }
 
